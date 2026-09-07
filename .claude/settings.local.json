@@ -3,7 +3,12 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git commit -m 'Initial commit: Setup Next.js project *)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Read(//c/Users/HP/.ssh/**)",
+      "Bash(ls -la ~/.ssh/ 2>&1)",
+      "Bash(ssh-keygen -t ed25519 -C \"torninway7@gmail.com\" -f ~/.ssh/id_ed25519 -N \"\")"
     ]
   }
 }

@@ -1,26 +1,170 @@
 @import "tailwindcss";
 
+/* ── CYBER·ZINE palette ────────────────────────────────────────────────
+   Dark-only by design. Acid green is the single loud accent; hot pink is
+   reserved for badges. Nothing dimmer than --dim may carry text. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #08090a;
+  --panel: #101214;
+  --ink: #e8e8e3;
+  --dim: #8a8a82;
+  --rule: #26282b;
+  --acid: #c7f53e;
+  --hot: #ff2e63;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-ink: var(--ink);
+  --color-dim: var(--dim);
+  --color-rule: var(--rule);
+  --color-acid: var(--acid);
+  --color-hot: var(--hot);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+
+  /* Thai + display face, and the Latin-only terminal face. */
+  --font-sans: var(--font-chakra), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jet), ui-monospace, "Courier New", monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  /* Thai needs more leading than Latin to clear its tone marks. */
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--acid);
+  color: #000;
+}
+
+:focus-visible {
+  outline: 2px solid var(--acid);
+  outline-offset: 2px;
+}
+
+/* Latin chrome: caps + wide tracking. Never apply tracking to Thai runs —
+   it detaches vowels and tone marks from their base glyph. */
+.chrome {
+  font-family: var(--font-jet), ui-monospace, "Courier New", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+/* ── Decorative layers ─────────────────────────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, var(--rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 20%, transparent 75%);
+}
+
+.scanlines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.035) 0px,
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.noise {
+  background-image: radial-gradient(circle at 50% 0%, rgba(199, 245, 62, 0.13), transparent 62%);
+}
+
+/* ── Motion ────────────────────────────────────────────────────────── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes scan {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100vh); }
+}
+
+.marquee-track {
+  animation: marquee 34s linear infinite;
+}
+
+.caret {
+  animation: blink 1.05s steps(1) infinite;
+}
+
+.scanbeam {
+  animation: scan 7s linear infinite;
+}
+
+/* Scroll reveal, progressive enhancement only.
+   Content is visible by default — the animation is layered on top and only in
+   browsers that support scroll-driven timelines. Never gate copy behind JS or
+   an opacity:0 initial state; if anything fails the page still reads. */
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+}
+
+/* Terminal caret drawn as a box rather than a glyph, so its size stays
+   proportional to the text instead of depending on the font's ▮ metrics. */
+.caret-box {
+  display: inline-block;
+  width: 0.46em;
+  height: 0.74em;
+  background: var(--acid);
+  vertical-align: -0.04em;
+}
+
+/* ── FAQ disclosure ────────────────────────────────────────────────── */
+summary::-webkit-details-marker,
+summary::marker {
+  display: none;
+  content: "";
+}
+
+/* ── Reduced motion: every animation above is decorative, so kill them ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .caret {
+    opacity: 1;
+  }
+
+  .scanbeam {
+    display: none;
+  }
 }
